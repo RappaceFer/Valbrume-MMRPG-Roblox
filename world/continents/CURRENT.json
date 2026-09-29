@@ -1,10 +1,10 @@
 {
-  "version": "continents-candidate-0.2.4",
-  "patch": "six-links-0.2.4",
-  "status": "READY_BUT_SUPPORT_FAILED_ONE_TILE_TEST_PENDING",
+  "version": "continents-candidate-0.2.5",
+  "patch": "six-links-0.2.5",
+  "status": "TARGETED_QUERY_REFRESH_STUDIO_PENDING",
   "repository_code_read_at": "91ec677d301c9551029b09f8082a5f07677006e4",
-  "candidate": "VALBRUME_CONTINENTS_CANDIDATE_0_2_4.rbxl",
-  "candidate_sha256": "e78ff49696195008d6af145d80b6bd60f158439db493313ce41b78d5fd391372",
+  "candidate": "VALBRUME_CONTINENTS_CANDIDATE_0_2_5.rbxl",
+  "candidate_sha256": "de4edf54d4e01bd0604046853e02839c347a92ab1f9c02b31bad3732613d91c2",
   "latest_engine_result": {
     "run": "95da8983-a746-46e6-a90e-993f49d27571",
     "generation_ready": true,
@@ -17,7 +17,14 @@
     "nonempty_read_regions_at_ray_misses": 131,
     "empty_read_regions_at_ray_misses": 0,
     "exact_ray_column_was_not_isolated": true,
-    "terrainMissing_by_link": {"S3_P6":46,"N4_P9":0,"O5_P8":79,"V6_P7":6,"S3_N4_BORDER":0,"O5_V6_BORDER":0},
+    "terrainMissing_by_link": {
+      "S3_P6": 46,
+      "N4_P9": 0,
+      "O5_P8": 79,
+      "V6_P7": 6,
+      "S3_N4_BORDER": 0,
+      "O5_V6_BORDER": 0
+    },
     "water_samples": 80,
     "steep_samples": 117,
     "abrupt_grade_samples": 113,
@@ -41,7 +48,8 @@
     "manual_traversal_passed": false,
     "mobile_performance_passed": false,
     "central_sea_passed": false,
-    "ready_to_publish": false
+    "ready_to_publish": false,
+    "candidate_0_2_5_Roblox_test_passed": false
   },
   "artifact_source_consistency": {
     "ContinentLinkRepair_embedded_blob": "3a02d7f9f93b78a61a43c81b1d499acbeb652fb9",
@@ -49,5 +57,43 @@
     "byte_identical": false,
     "note": "The standalone canary does not use or overwrite this module. Reconcile before the next bundled candidate."
   },
-  "next_user_action": "Run TEST_TERRAIN_S3.txt in existing candidate 0.2.4, Play/Server after Ready; collect CANARY_BEGIN/END; Stop Play."
+  "next_user_action": "Run TEST_TERRAIN_S3.txt in existing candidate 0.2.4, Play/Server after Ready; collect CANARY_BEGIN/END; Stop Play.",
+  "latest_engine_result_0_2_4": {
+    "generation_ready": true,
+    "terrainMissing": 131,
+    "unsupported": 129,
+    "remaining_links": {
+      "S3_P6": [
+        46,
+        46
+      ],
+      "O5_P8": [
+        79,
+        79
+      ],
+      "V6_P7": [
+        6,
+        4
+      ]
+    },
+    "zero_support_links": [
+      "N4_P9",
+      "S3_N4_BORDER",
+      "O5_V6_BORDER"
+    ]
+  },
+  "canary_result": {
+    "point": {
+      "x": -1962.0330907564603,
+      "z": -1056.6750321948148
+    },
+    "status": "ONE_TILE_RAY_RECOVERED",
+    "before_queryable": false,
+    "exact_column_solid_cells": 41,
+    "after_y": 34.806396484375
+  },
+  "notes": [
+    "0.2.5 preserves the six-link support fills and round-trips only residual 32-stud tiles on S3_P6, O5_P8 and V6_P7",
+    "N4_P9, S3_N4_BORDER and O5_V6_BORDER receive no native-query refresh"
+  ]
 }
