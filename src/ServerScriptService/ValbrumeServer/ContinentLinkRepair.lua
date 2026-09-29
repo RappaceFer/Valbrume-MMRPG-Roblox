@@ -1,17 +1,11 @@
--- Candidate 0.2.1: native repair restricted to six surveyed links, during Play only.
--- Existing voxel shapes (including native caves/water) are preserved. We refresh
--- their local collision representation where raycasts and voxel data disagree.
--- Genuinely empty columns are filled only outside source maps and protected V3.
+-- Candidate 0.2.2: fill only confirmed missing Terrain support on the six audited links.
+-- No ReadVoxelChannels/WriteVoxelChannels writes: native terrain that already raycasts is untouched.
 local RunService=game:GetService("RunService")
 local HttpService=game:GetService("HttpService")
 local P=require(script.Parent.ContinentLinkPlan)
-local G=require(script.Parent.ContinentLinkGeometry)
-local V=require(script.Parent.ContinentLinkVoxels)
-local Atlas=require(game:GetService("ReplicatedStorage").Valbrume.ContinentAtlas)
-local V3=require(script.Parent.WorldV3.Layout)
 local R={}
 local active,finishedWorld,finishedGeneration,lastReport
-local channels={"SolidMaterial","SolidOccupancy","LiquidOccupancy"}
+local function lerp(a,b,t) return a+(b-a)*t end
 function R.apply(world)
     assert(RunService:IsServer() and RunService:IsRunning(),"Six-link repair: running server only")
     local root=workspace:FindFirstChild("ValbrumeContinents")
@@ -20,6 +14,7 @@ function R.apply(world)
     assert(type(generation)=="string" and root and root:FindFirstChild("ImportedRegions"),"Incomplete candidate")
     if finishedWorld==world and finishedGeneration==generation then return lastReport end
     assert(not active,"A six-link repair is already running")
+    assert(world:GetAttribute("GenerationReady")~=true,"Repair must run before Ready")
     local started=os.clock()
     local function valid()
         return workspace:FindFirstChild("ValbrumeWorld")==world and world.Parent==workspace
@@ -30,110 +25,70 @@ function R.apply(world)
         assert(valid(),"World changed; restart Play")
         assert(os.clock()-started<=P.MaxSeconds,"Six-link repair budget exceeded; restart Play")
     end
-    assert(valid() and world:GetAttribute("GenerationReady")~=true,"Repair must run before Ready")
-    local tiles=G.tiles(P,V3,Atlas) -- validates identities, bounds and budget BEFORE any write
-    local report={version=P.Version,tiles=#tiles,checked=0,filled=0,refreshed=0,
-        writes=0,protectedEmpty=0,partSupportedEmpty=0,outOfSlab=0,nativeRayMismatch=0}
     local tp=RaycastParams.new()
     tp.FilterType=Enum.RaycastFilterType.Include
-    tp.FilterDescendantsInstances={terrain};tp.IgnoreWater=false
-    local sp=RaycastParams.new()
-    sp.FilterType=Enum.RaycastFilterType.Include
-    sp.FilterDescendantsInstances={world,root,terrain};sp.IgnoreWater=true;sp.RespectCanCollide=true
-    local sy=(P.MaxY-P.MinY)/4
+    tp.FilterDescendantsInstances={terrain}
+    tp.IgnoreWater=false
+    local report={version=P.Version,samples=0,existing=0,filled=0,postMissing=0,writes=0,seconds=0}
     active=true
     root:SetAttribute("LinkRepairStatus","BUILDING")
     local ok,err=xpcall(function()
-        for ti,tile in ipairs(tiles) do
-            guard()
-            local region=Region3.new(Vector3.new(tile.X,P.MinY,tile.Z),
-                Vector3.new(tile.X+P.TileSize,P.MaxY,tile.Z+P.TileSize))
-            local before=terrain:ReadVoxelChannels(region,4,channels)
-            assert(before.Size.X==16 and before.Size.Y==sy and before.Size.Z==16,"Unexpected native tile dimensions")
-            local after,refresh=nil,{}
-            for _,c in ipairs(tile.Columns) do
-                report.checked=report.checked+1
-                local occupied,top=V.top(before,c.IX,c.IZ,sy,P.MinY,Enum.Material.Air)
-                local origin=Vector3.new(c.X,512,c.Z)
-                local ray=Vector3.new(0,-1024,0)
-                local hit=workspace:Raycast(origin,ray,tp)
-                if occupied then
-                    -- A top outside the measured slab must not be interpreted as a missing column.
-                    if not hit or (hit.Position.Y<P.MaxY and math.abs(hit.Position.Y-top)>8) then
-                        report.nativeRayMismatch=report.nativeRayMismatch+1
-                        refresh[#refresh+1]=c
-                    end
-                elseif hit then
-                    report.outOfSlab=report.outOfSlab+1
-                elseif c.ProtectedSource then
-                    -- Do NOT replace native-map terrain/caves based on a guessed altitude.
-                    report.protectedEmpty=report.protectedEmpty+1
-                elseif workspace:Raycast(origin,ray,sp) then
-                    report.partSupportedEmpty=report.partSupportedEmpty+1
-                else
-                    after=after or V.copy(before,16,sy,16)
-                    V.fillEmpty(after,c.IX,c.IZ,sy,P.MinY,P.FoundationY,
-                        G.fillHeight(P,c),Enum.Material[c.Material],Enum.Material.Air)
-                    report.filled=report.filled+1
-                end
-            end
-            if after or #refresh>0 then
-                after=after or V.copy(before,16,sy,16)
-                -- Native occupied columns are never changed in the FINAL state.
-                guard()
-                V.commit({
-                    context=string.format("tile X=%d Y=%d Z=%d",tile.X,P.MinY,tile.Z),
-                    write=function(data)
+        -- Same centre/lateral samples as ContinentLinkAudit. 16x16 patches overlap
+        -- the adjacent 12-stud samples and the +/-16 lateral bands.
+        for _,link in ipairs(P.Links) do
+            for _,offset in ipairs(P.CheckOffsets) do
+                for i=1,#link.Points-1 do
+                    local a,b=link.Points[i],link.Points[i+1]
+                    local dx,dz=b[1]-a[1],b[3]-a[3]
+                    local distance=math.sqrt(dx*dx+dz*dz)
+                    local count=math.max(1,math.ceil(distance/P.CheckStep))
+                    for n=(i==1 and 0 or 1),count do
                         guard()
-                        -- Whitelist again at the API boundary; never forward Size.
-                        terrain:WriteVoxelChannels(region,4,{
-                            SolidMaterial=data.SolidMaterial,
-                            SolidOccupancy=data.SolidOccupancy,
-                            LiquidOccupancy=data.LiquidOccupancy,
-                        })
-                    end,
-                    waitFrame=function() RunService.PostSimulation:Wait();guard() end,
-                    read=function()
-                        assert(valid(),"World changed during voxel verification")
-                        return terrain:ReadVoxelChannels(region,4,channels)
-                    end,
-                    restore=function(data)
-                        assert(valid(),"World changed; refusing rollback into a different world")
-                        terrain:WriteVoxelChannels(region,4,{
-                            SolidMaterial=data.SolidMaterial,
-                            SolidOccupancy=data.SolidOccupancy,
-                            LiquidOccupancy=data.LiquidOccupancy,
-                        })
-                    end,
-                    restoreWaitFrame=function()
-                        RunService.PostSimulation:Wait()
-                        assert(valid(),"World changed during restoration")
-                    end,
-                    onMismatch=function(phase,diff)
-                        if diff then
-                            print("[VALBRUME VOXEL DIAGNOSTIC] "..HttpService:JSONEncode({
-                                version=P.Version,phase=phase,channel=diff.channel,
-                                tile={x=tile.X,y=P.MinY,z=tile.Z},
-                                cell={x=tile.X+(diff.ix-.5)*4,
-                                    y=P.MinY+(diff.iy-.5)*4,z=tile.Z+(diff.iz-.5)*4},
-                                expected=diff.expected,actual=diff.actual,
-                                before={material=tostring(before.SolidMaterial[diff.ix][diff.iy][diff.iz]),
-                                    solid=before.SolidOccupancy[diff.ix][diff.iy][diff.iz],
-                                    liquid=before.LiquidOccupancy[diff.ix][diff.iy][diff.iz]},
-                                readbackAttempts=3,tolerance=1/255+.00001,
-                            }))
+                        local t=n/count
+                        local x=lerp(a[1],b[1],t)-dz/distance*offset
+                        local z=lerp(a[3],b[3],t)+dx/distance*offset
+                        local y=lerp(a[2],b[2],t)
+                        local hit=workspace:Raycast(Vector3.new(x,384,z),Vector3.new(0,-896,0),tp)
+                        report.samples=report.samples+1
+                        if hit then
+                            report.existing=report.existing+1
+                        else
+                            local bottom=P.FoundationY
+                            assert(y>bottom+4 and y<P.MaxY,"Unsafe six-link fill height")
+                            terrain:FillBlock(
+                                CFrame.new(x,(bottom+y)/2,z),
+                                Vector3.new(P.FillFootprint,y-bottom,P.FillFootprint),
+                                Enum.Material[link.Material]
+                            )
+                            report.filled=report.filled+1
+                            report.writes=report.writes+1
                         end
-                    end,
-                },before,after,refresh,16,sy,16,Enum.Material.Air)
-                report.writes=report.writes+1
-                report.refreshed=report.refreshed+#refresh
-            end
-            if ti%32==0 then
-                print(string.format("[VALBRUME SIX LINKS] %d/%d tiles, refreshed=%d, filled=%d",ti,#tiles,report.refreshed,report.filled))
-                RunService.PostSimulation:Wait()
+                        if report.samples%128==0 then RunService.PostSimulation:Wait() end
+                    end
+                end
             end
         end
         for _=1,3 do RunService.PostSimulation:Wait();guard() end
+        for _,link in ipairs(P.Links) do
+            for _,offset in ipairs(P.CheckOffsets) do
+                for i=1,#link.Points-1 do
+                    local a,b=link.Points[i],link.Points[i+1]
+                    local dx,dz=b[1]-a[1],b[3]-a[3]
+                    local distance=math.sqrt(dx*dx+dz*dz)
+                    local count=math.max(1,math.ceil(distance/P.CheckStep))
+                    for n=(i==1 and 0 or 1),count do
+                        guard()
+                        local t=n/count
+                        local x=lerp(a[1],b[1],t)-dz/distance*offset
+                        local z=lerp(a[3],b[3],t)+dx/distance*offset
+                        if not workspace:Raycast(Vector3.new(x,384,z),Vector3.new(0,-896,0),tp) then
+                            report.postMissing=report.postMissing+1
+                        end
+                    end
+                end
+            end
+        end
+        assert(report.postMissing==0,"Six-link support verification still has missing Terrain")
     end,debug.traceback)
     active=false
     report.seconds=os.clock()-started
@@ -145,7 +100,6 @@ function R.apply(world)
     root:SetAttribute("LinkRepairVersion",P.Version)
     root:SetAttribute("LinkRepairStatus","APPLIED_AUDIT_PENDING")
     root:SetAttribute("LinkRepairColumnsFilled",report.filled)
-    root:SetAttribute("LinkRepairColumnsRefreshed",report.refreshed)
     root:SetAttribute("LinkRepairSeconds",report.seconds)
     finishedWorld,finishedGeneration,lastReport=world,generation,report
     print("[VALBRUME SIX LINKS] "..HttpService:JSONEncode(report))
