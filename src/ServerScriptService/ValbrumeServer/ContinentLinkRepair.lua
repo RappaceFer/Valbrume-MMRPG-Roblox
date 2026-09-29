@@ -1,4 +1,4 @@
--- Candidate 0.2.2: fill only confirmed missing Terrain support on the six audited links.
+-- Candidate 0.2.3 diagnostic: fill confirmed missing support, then report residual points without aborting Ready.
 -- No ReadVoxelChannels/WriteVoxelChannels writes: native terrain that already raycasts is untouched.
 local RunService=game:GetService("RunService")
 local HttpService=game:GetService("HttpService")
@@ -29,7 +29,7 @@ function R.apply(world)
     tp.FilterType=Enum.RaycastFilterType.Include
     tp.FilterDescendantsInstances={terrain}
     tp.IgnoreWater=false
-    local report={version=P.Version,samples=0,existing=0,filled=0,postMissing=0,writes=0,seconds=0}
+    local report={version=P.Version,samples=0,existing=0,filled=0,postMissing=0,writes=0,seconds=0,postMissingByLink={}}
     active=true
     root:SetAttribute("LinkRepairStatus","BUILDING")
     local ok,err=xpcall(function()
@@ -69,7 +69,9 @@ function R.apply(world)
             end
         end
         for _=1,3 do RunService.PostSimulation:Wait();guard() end
+        local details=0
         for _,link in ipairs(P.Links) do
+            local missing=0
             for _,offset in ipairs(P.CheckOffsets) do
                 for i=1,#link.Points-1 do
                     local a,b=link.Points[i],link.Points[i+1]
@@ -83,12 +85,21 @@ function R.apply(world)
                         local z=lerp(a[3],b[3],t)+dx/distance*offset
                         if not workspace:Raycast(Vector3.new(x,384,z),Vector3.new(0,-896,0),tp) then
                             report.postMissing=report.postMissing+1
+                            missing=missing+1
+                            if details<P.MaxDetails then
+                                details=details+1
+                                print("[VALBRUME SIX LINKS MISSING] "..HttpService:JSONEncode({
+                                    version=P.Version,link=link.Id,offset=offset,segment=i,sample=n,
+                                    x=x,z=z,plannedY=lerp(a[2],b[2],t),footprint=P.FillFootprint
+                                }))
+                            end
                         end
                     end
                 end
             end
+            report.postMissingByLink[link.Id]=missing
         end
-        assert(report.postMissing==0,"Six-link support verification still has missing Terrain")
+        report.status=(report.postMissing==0) and "SUPPORT_FILLED" or "DIAGNOSTIC_INCOMPLETE"
     end,debug.traceback)
     active=false
     report.seconds=os.clock()-started
@@ -98,7 +109,7 @@ function R.apply(world)
         error("Six-link repair interrupted. Stop Play; do not publish: "..tostring(err))
     end
     root:SetAttribute("LinkRepairVersion",P.Version)
-    root:SetAttribute("LinkRepairStatus","APPLIED_AUDIT_PENDING")
+    root:SetAttribute("LinkRepairStatus",report.status=="SUPPORT_FILLED" and "APPLIED_AUDIT_PENDING" or "DIAGNOSTIC_INCOMPLETE")
     root:SetAttribute("LinkRepairColumnsFilled",report.filled)
     root:SetAttribute("LinkRepairSeconds",report.seconds)
     finishedWorld,finishedGeneration,lastReport=world,generation,report
