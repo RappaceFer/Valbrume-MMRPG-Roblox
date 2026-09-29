@@ -2,9 +2,9 @@
 -- Points: {X, fallback ground Y, Z}. Y is used ONLY for genuinely empty columns
 -- outside native-map bounds, never to flatten an existing hill/cave/river.
 local P = {
-    Version = "six-links-0.2.1",
+    Version = "six-links-0.2.2",
     Resolution = 4, TileSize = 64, MinY = -256, MaxY = 384,
-    CoreRadius = 32, OuterRadius = 48, FoundationY = -96,
+    CoreRadius = 32, OuterRadius = 48, FoundationY = -96, FillFootprint = 16,
     MaxTiles = 640, MaxSeconds = 85, CheckStep = 12,
     CheckOffsets = {-16, 0, 16}, MaxDetails = 12,
     -- Native chunk envelopes. Do not synthesize missing source-map content.
