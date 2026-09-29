@@ -68,7 +68,9 @@ function R.apply(world)
                 end
             end
         end
-        for _=1,6 do RunService.PostSimulation:Wait();guard() end\n        task.wait(P.PhysicsSettleSeconds)\n        guard()
+        for _=1,6 do RunService.PostSimulation:Wait();guard() end
+        task.wait(P.PhysicsSettleSeconds)
+        guard()
         local details=0
         for _,link in ipairs(P.Links) do
             local missing=0
