@@ -1,0 +1,43 @@
+"""Build offline Studio commands and an inert ModuleScript model. No network I/O.
+Run from this directory: python build_release.py --output ./dist
+This does NOT decode terrain or assemble the game outside Studio.
+"""
+from pathlib import Path
+import argparse
+import xml.etree.ElementTree as ET
+
+WRAPPERS = {'EXPORT_PLACE6.txt': ['-- OUTIL COMPLET. Copie native; ne modifie pas la geometrie ni les scripts de la carte source.\nassert(game:GetService("RunService"):IsStudio() and not game:GetService("RunService"):IsRunning(), "Ouvre la copie SCENE_ONLY, Play arrete")\nassert(not game:GetService("ServerScriptService"):FindFirstChild("ValbrumeServer"),"Cet export est pour une carte source, pas DEV")\nfor _,o in ipairs(game:GetDescendants()) do\n    if o:IsA("BaseScript") then assert(o.Disabled, "Ouvre la copie SCENE_ONLY : script actif "..o:GetFullName()) end\nend\n', 'local storage=game:GetService("ServerStorage")\nassert(not storage:FindFirstChild("WorldV4Export"),"Export deja present : sauvegarde-le, puis rouvre la copie source pour recommencer")\nlocal bundle=Instance.new("Model");bundle.Name="WorldV4Export"\nlocal snapshot=Capture.capture("P6",workspace,{-640,-128,-640,640,256,640},{0,0,0},false)\nsnapshot.Parent=bundle;bundle.Parent=storage\ngame:GetService("Selection"):Set({bundle})\nprint("[VALBRUME EXPORT] OK. Modele WorldV4Export selectionne. Clic droit > Save to File (.rbxm). Ne pas sauvegarder la place source.")\n'], 'EXPORT_PLACE7.txt': ['-- OUTIL COMPLET. Copie native; ne modifie pas la geometrie ni les scripts de la carte source.\nassert(game:GetService("RunService"):IsStudio() and not game:GetService("RunService"):IsRunning(), "Ouvre la copie SCENE_ONLY, Play arrete")\nassert(not game:GetService("ServerScriptService"):FindFirstChild("ValbrumeServer"),"Cet export est pour une carte source, pas DEV")\nfor _,o in ipairs(game:GetDescendants()) do\n    if o:IsA("BaseScript") then assert(o.Disabled, "Ouvre la copie SCENE_ONLY : script actif "..o:GetFullName()) end\nend\n', 'local storage=game:GetService("ServerStorage")\nassert(not storage:FindFirstChild("WorldV4Export"),"Export deja present : sauvegarde-le, puis rouvre la copie source pour recommencer")\nlocal bundle=Instance.new("Model");bundle.Name="WorldV4Export"\nlocal snapshot=Capture.capture("P7",workspace,{-1152,-128,-1152,1152,256,1152},{0,0,0},false)\nsnapshot.Parent=bundle;bundle.Parent=storage\ngame:GetService("Selection"):Set({bundle})\nprint("[VALBRUME EXPORT] OK. Modele WorldV4Export selectionne. Clic droit > Save to File (.rbxm). Ne pas sauvegarder la place source.")\n'], 'EXPORT_PLACE8.txt': ['-- OUTIL COMPLET. Copie native; ne modifie pas la geometrie ni les scripts de la carte source.\nassert(game:GetService("RunService"):IsStudio() and not game:GetService("RunService"):IsRunning(), "Ouvre la copie SCENE_ONLY, Play arrete")\nassert(not game:GetService("ServerScriptService"):FindFirstChild("ValbrumeServer"),"Cet export est pour une carte source, pas DEV")\nfor _,o in ipairs(game:GetDescendants()) do\n    if o:IsA("BaseScript") then assert(o.Disabled, "Ouvre la copie SCENE_ONLY : script actif "..o:GetFullName()) end\nend\n', 'local storage=game:GetService("ServerStorage")\nassert(not storage:FindFirstChild("WorldV4Export"),"Export deja present : sauvegarde-le, puis rouvre la copie source pour recommencer")\nlocal bundle=Instance.new("Model");bundle.Name="WorldV4Export"\nlocal snapshot=Capture.capture("P8",workspace,{-640,-128,-640,640,256,640},{0,0,0},false)\nsnapshot.Parent=bundle;bundle.Parent=storage\ngame:GetService("Selection"):Set({bundle})\nprint("[VALBRUME EXPORT] OK. Modele WorldV4Export selectionne. Clic droit > Save to File (.rbxm). Ne pas sauvegarder la place source.")\n'], 'EXPORT_PLACE9.txt': ['-- OUTIL COMPLET. Copie native; ne modifie pas la geometrie ni les scripts de la carte source.\nassert(game:GetService("RunService"):IsStudio() and not game:GetService("RunService"):IsRunning(), "Ouvre la copie SCENE_ONLY, Play arrete")\nassert(not game:GetService("ServerScriptService"):FindFirstChild("ValbrumeServer"),"Cet export est pour une carte source, pas DEV")\nfor _,o in ipairs(game:GetDescendants()) do\n    if o:IsA("BaseScript") then assert(o.Disabled, "Ouvre la copie SCENE_ONLY : script actif "..o:GetFullName()) end\nend\n', 'local storage=game:GetService("ServerStorage")\nassert(not storage:FindFirstChild("WorldV4Export"),"Export deja present : sauvegarde-le, puis rouvre la copie source pour recommencer")\nlocal bundle=Instance.new("Model");bundle.Name="WorldV4Export"\nlocal snapshot=Capture.capture("P9",workspace,{-640,-128,-640,640,256,640},{0,0,0},false)\nsnapshot.Parent=bundle;bundle.Parent=storage\ngame:GetService("Selection"):Set({bundle})\nprint("[VALBRUME EXPORT] OK. Modele WorldV4Export selectionne. Clic droit > Save to File (.rbxm). Ne pas sauvegarder la place source.")\n'], 'EXPORT_VALBRUME_6_REGIONS.txt': ['-- OUTIL COMPLET. Copie native; ne modifie pas la geometrie ni les scripts de la carte source.\nlocal RunService=game:GetService("RunService")\nassert(RunService:IsStudio() and RunService:IsRunning() and RunService:IsServer(),"Ouvre DEV en Play et choisis SERVER")\nlocal world=assert(workspace:FindFirstChild("ValbrumeWorld"),"Monde absent")\nassert(world:GetAttribute("GenerationReady")==true,"Attendre GenerationReady")\n', 'local storage=game:GetService("ServerStorage")\nassert(not storage:FindFirstChild("WorldV4Export"),"Export deja present")\nlocal bundle=Instance.new("Model");bundle.Name="WorldV4Export"\nlocal coords={A2={-900,0,0},H2={900,0,0},S3={-1520,0,-560},N4={-1520,0,560},O5={1520,0,-560},V6={1520,0,560}}\nlocal ok,err=xpcall(function()\n    for _,id in ipairs({"A2","H2","S3","N4","O5","V6"}) do\n        local c=coords[id]\n        local bounds={c[1]-352,-128,c[3]-352,c[1]+352,256,c[3]+352}\n        local snapshot=Capture.capture(id,world,bounds,c,true);snapshot.Parent=bundle\n    end\nend,debug.traceback)\nif not ok then bundle:Destroy();error(err) end\nbundle.Parent=storage;game:GetService("Selection"):Set({bundle})\nprint("[VALBRUME EXPORT] 6 REGIONS OK. AVANT STOP : clic droit sur WorldV4Export > Save to File (.rbxm). Puis Stop; ne pas sauvegarder le monde Play dans DEV.")\n']}
+
+COMMANDS = {'BUILD_IN_EMPTY_PLACE.txt': '-- Dans une NOUVELLE place de chantier vide, PAS dans VALBRUME_DEV. Play arrete.\nlocal tools=assert(game:GetService("ServerStorage"):FindFirstChild("ValbrumeWorldV4Tools"),"Inserer ValbrumeWorldV4Tools.rbxmx dans ServerStorage")\nrequire(tools.Assemble).build(require(tools.Layout),require(tools.HeightField))\n', 'SCAN_WORLD_V4.txt': 'local tools=assert(game:GetService("ServerStorage"):FindFirstChild("ValbrumeWorldV4Tools"),"Outils V4 manquants")\nrequire(tools.Audit).run(require(tools.Layout))\n'}
+
+def build(source: Path, output: Path) -> None:
+    modules = {f.stem: f.read_text(encoding="utf-8") for f in sorted((source / "modules").glob("*.lua"))}
+    expected = {"Layout", "HeightField", "NativeCapture", "Assemble", "Audit"}
+    if set(modules) != expected:
+        raise ValueError(f"Incomplete modules: {set(modules) ^ expected}")
+    export = output / "exports_studio"
+    export.mkdir(parents=True, exist_ok=True)
+    for name, (head, tail) in WRAPPERS.items():
+        content = head + "local Capture=(function()\n" + modules["NativeCapture"] + "\nend)()\n" + tail
+        (export / name).write_text(content, encoding="utf-8", newline="\n")
+    document = ET.Element("roblox", version="4")
+    ET.SubElement(document, "External").text = "null"
+    ET.SubElement(document, "External").text = "nil"
+    folder = ET.SubElement(document, "Item", {"class": "Folder", "referent": "RBX0"})
+    props = ET.SubElement(folder, "Properties")
+    ET.SubElement(props, "string", name="Name").text = "ValbrumeWorldV4Tools"
+    for index, (name, content) in enumerate(modules.items(), 1):
+        node = ET.SubElement(folder, "Item", {"class": "ModuleScript", "referent": f"RBX{index}"})
+        props = ET.SubElement(node, "Properties")
+        ET.SubElement(props, "string", name="Name").text = name
+        ET.SubElement(props, "ProtectedString", name="Source").text = content
+    ET.ElementTree(document).write(output / "ValbrumeWorldV4Tools.rbxmx", encoding="utf-8", xml_declaration=True)
+    for name, content in COMMANDS.items():
+        (output / name).write_text(content, encoding="utf-8", newline="\n")
+    print(f"Built 5 export commands, 2 entry commands and 5 embedded modules in {output}")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    build(Path(__file__).resolve().parent, args.output.resolve())

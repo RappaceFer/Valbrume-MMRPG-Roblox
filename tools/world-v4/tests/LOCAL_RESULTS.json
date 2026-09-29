@@ -1,0 +1,16 @@
+{
+  "syntax_common_lua_luau_files": 12,
+  "field_samples": 24897,
+  "land_components_64stud_grid": 2,
+  "land_component_sample_counts": [
+    5602,
+    5563
+  ],
+  "intercontinent_water_strip_checked": true,
+  "ocean_boundary_checked": true,
+  "candidate_link_field_samples": 2010,
+  "embedded_modules_exact": 5,
+  "roblox_engine_executed": false,
+  "native_export_import_tested_in_studio": false,
+  "render_collision_mobile_tests": false
+}
