@@ -59,7 +59,7 @@ function R.prepare(world)
     RunService.PostSimulation:Wait()
     -- Six-link native repair runs after legacy terrain writes, before Biome/Ready.
     require(script.Parent.ContinentLinkRepair).apply(world)
-    root:SetAttribute("CandidateVersion","continents-candidate-0.2.3")
+    root:SetAttribute("CandidateVersion","continents-candidate-0.2.4")
     root:SetAttribute("RimColumnsPatched",written)
     print("[VALBRUME CONTINENTS] "..HttpService:JSONEncode({version=Atlas.Version,checked=checked,patched=written,seconds=os.clock()-started}))
 end
@@ -70,7 +70,7 @@ function R.audit(world)
     assert(RunService:IsStudio() and RunService:IsServer() and RunService:IsRunning(),"Audit: Studio Play / Server")
     assert(valid(world) and world:GetAttribute("GenerationReady")==true,"World not Ready")
     local root=workspace:FindFirstChild("ValbrumeContinents")
-    local summary={version="continents-candidate-0.2.3",regions=0,parts=0,foreignSources=0,unanchored=0,samples=0,flagged=0,terrainMissing=0,unsupported=0}
+    local summary={version="continents-candidate-0.2.4",regions=0,parts=0,foreignSources=0,unanchored=0,samples=0,flagged=0,terrainMissing=0,unsupported=0}
     print("=== VALBRUME_CONTINENTS_AUDIT_BEGIN ===")
     local ok,err=xpcall(function()
         assert(root and root:FindFirstChild("ImportedRegions"),"ImportedRegions missing")
