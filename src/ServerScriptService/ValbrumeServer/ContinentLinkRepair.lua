@@ -1,4 +1,4 @@
--- Candidate 0.2: native repair restricted to six surveyed links, during Play only.
+-- Candidate 0.2.1: native repair restricted to six surveyed links, during Play only.
 -- Existing voxel shapes (including native caves/water) are preserved. We refresh
 -- their local collision representation where raycasts and voxel data disagree.
 -- Genuinely empty columns are filled only outside source maps and protected V3.
@@ -82,9 +82,48 @@ function R.apply(world)
                 -- Native occupied columns are never changed in the FINAL state.
                 guard()
                 V.commit({
-                    write=function(data) terrain:WriteVoxelChannels(region,4,data) end,
+                    context=string.format("tile X=%d Y=%d Z=%d",tile.X,P.MinY,tile.Z),
+                    write=function(data)
+                        guard()
+                        -- Whitelist again at the API boundary; never forward Size.
+                        terrain:WriteVoxelChannels(region,4,{
+                            SolidMaterial=data.SolidMaterial,
+                            SolidOccupancy=data.SolidOccupancy,
+                            LiquidOccupancy=data.LiquidOccupancy,
+                        })
+                    end,
                     waitFrame=function() RunService.PostSimulation:Wait();guard() end,
-                    read=function() return terrain:ReadVoxelChannels(region,4,channels) end,
+                    read=function()
+                        assert(valid(),"World changed during voxel verification")
+                        return terrain:ReadVoxelChannels(region,4,channels)
+                    end,
+                    restore=function(data)
+                        assert(valid(),"World changed; refusing rollback into a different world")
+                        terrain:WriteVoxelChannels(region,4,{
+                            SolidMaterial=data.SolidMaterial,
+                            SolidOccupancy=data.SolidOccupancy,
+                            LiquidOccupancy=data.LiquidOccupancy,
+                        })
+                    end,
+                    restoreWaitFrame=function()
+                        RunService.PostSimulation:Wait()
+                        assert(valid(),"World changed during restoration")
+                    end,
+                    onMismatch=function(phase,diff)
+                        if diff then
+                            print("[VALBRUME VOXEL DIAGNOSTIC] "..HttpService:JSONEncode({
+                                version=P.Version,phase=phase,channel=diff.channel,
+                                tile={x=tile.X,y=P.MinY,z=tile.Z},
+                                cell={x=tile.X+(diff.ix-.5)*4,
+                                    y=P.MinY+(diff.iy-.5)*4,z=tile.Z+(diff.iz-.5)*4},
+                                expected=diff.expected,actual=diff.actual,
+                                before={material=tostring(before.SolidMaterial[diff.ix][diff.iy][diff.iz]),
+                                    solid=before.SolidOccupancy[diff.ix][diff.iy][diff.iz],
+                                    liquid=before.LiquidOccupancy[diff.ix][diff.iy][diff.iz]},
+                                readbackAttempts=3,tolerance=1/255+.00001,
+                            }))
+                        end
+                    end,
                 },before,after,refresh,16,sy,16,Enum.Material.Air)
                 report.writes=report.writes+1
                 report.refreshed=report.refreshed+#refresh

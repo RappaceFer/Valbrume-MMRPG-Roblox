@@ -61,37 +61,93 @@ function V.fillEmpty(data,x,z,sy,minY,foundationY,height,material,air)
         end
     end
 end
+-- Strict validation is retained. Never accept NaN or increase the old tolerance
+-- to conceal a failed write. Details distinguish the first channel/cell mismatch.
+local function cell(data,x,y,z)
+    return {
+        material=tostring(data.SolidMaterial[x][y][z]),
+        solid=data.SolidOccupancy[x][y][z],
+        liquid=data.LiquidOccupancy[x][y][z],
+    }
+end
 function V.equal(a,b,sx,sy,sz,epsilon)
     epsilon=epsilon or 0
     for x=1,sx do for y=1,sy do for z=1,sz do
-        if a.SolidMaterial[x][y][z]~=b.SolidMaterial[x][y][z] then return false end
-        if math.abs(a.SolidOccupancy[x][y][z]-b.SolidOccupancy[x][y][z])>epsilon then return false end
-        if math.abs(a.LiquidOccupancy[x][y][z]-b.LiquidOccupancy[x][y][z])>epsilon then return false end
+        for _,name in ipairs(names) do
+            local expected,actual=a[name][x][y][z],b[name][x][y][z]
+            local same
+            if name=="SolidMaterial" then
+                same=expected==actual
+            else
+                same=type(expected)=="number" and type(actual)=="number"
+                    and expected==expected and actual==actual
+                    and expected>=0 and expected<=1 and actual>=0 and actual<=1
+                    and math.abs(expected-actual)<=epsilon
+            end
+            if not same then
+                return false,{channel=name,ix=x,iy=y,iz=z,
+                    expected=cell(a,x,y,z),actual=cell(b,x,y,z)}
+            end
+        end
     end end end
     return true
 end
--- Recreate local native collision data only where native occupancy and rays disagree.
--- If a write/wait/verification fails, attempt to restore THIS tile's original channels.
--- Earlier successful tiles remain patched until Stop; caller must mark generation failed.
+local function describe(d)
+    if not d then return "no-cell-detail" end
+    local a,b=d.expected,d.actual
+    return string.format("channel=%s cell=(%d,%d,%d) expected=(%s,%s,%s) actual=(%s,%s,%s)",
+        d.channel,d.ix,d.iy,d.iz,a.material,tostring(a.solid),tostring(a.liquid),
+        b.material,tostring(b.solid),tostring(b.liquid))
+end
+-- ReadVoxelChannels returns Size metadata. All paths, including rollback, use
+-- detached copies with ONLY the three writable channels and dense numeric rows.
+-- Copy/validation happens before the first write. Never mutate the read snapshot.
 function V.commit(adapter,before,after,refresh,sx,sy,sz,air)
+    local original=V.copy(before,sx,sy,sz)
+    local desired=V.copy(after,sx,sy,sz)
+    local attempts=3 -- bounded re-reads only; NEVER retries a destructive write
+    local epsilon=1/255+.00001 -- unchanged from candidate 0.2.0
+    local context=adapter.context or "unknown tile"
+    local function report(phase,detail)
+        if adapter.onMismatch then
+            -- A diagnostic logger must not prevent restoration of the tile.
+            pcall(adapter.onMismatch,phase,detail)
+        end
+    end
+    local function verify(expected,waitFrame,phase)
+        local detail
+        for attempt=1,attempts do
+            local same,diff=V.equal(expected,adapter.read(),sx,sy,sz,epsilon)
+            if same then return end
+            detail=diff
+            if attempt<attempts then waitFrame() end
+        end
+        report(phase,detail)
+        error(phase.." mismatch ["..context.."] "..describe(detail))
+    end
     local ok,err=xpcall(function()
         if #refresh>0 then
-            local cleared=V.copy(before,sx,sy,sz)
+            local cleared=V.copy(original,sx,sy,sz)
             for _,c in ipairs(refresh) do V.clearColumn(cleared,c.IX,c.IZ,sy,air) end
             adapter.write(cleared)
             adapter.waitFrame()
         end
-        adapter.write(after)
+        adapter.write(desired)
         adapter.waitFrame()
-        assert(V.equal(after,adapter.read(),sx,sy,sz,1/255+.00001),"Voxel readback mismatch")
+        verify(desired,adapter.waitFrame,"Voxel readback")
     end,debug.traceback)
     if not ok then
+        -- The repair deadline is NOT a reason to skip rollback. The adapter's
+        -- separate restoration callbacks still check world/session identity.
         local restored,restoreErr=pcall(function()
-            adapter.write(before)
-            adapter.waitFrame()
-            assert(V.equal(before,adapter.read(),sx,sy,sz,1/255+.00001),"Restoration readback mismatch")
+            local restore=adapter.restore or adapter.write
+            local waitRestore=adapter.restoreWaitFrame or adapter.waitFrame
+            restore(V.copy(original,sx,sy,sz))
+            waitRestore()
+            verify(original,waitRestore,"Restoration readback")
         end)
-        error("Native tile repair failed: "..tostring(err).."; tileRestored="..tostring(restored).." "..tostring(restoreErr))
+        error("Native tile repair failed ["..context.."]: "..tostring(err)
+            .."; tileRestored="..tostring(restored).." "..tostring(restoreErr))
     end
 end
 return V

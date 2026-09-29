@@ -1,0 +1,13 @@
+{
+  "version": "six-links-0.2.1",
+  "environment": "Linux; liblua5.4.so.0 via ctypes; simulated voxel API",
+  "test_file": "tests/continent-links/voxel_io_regression.lua",
+  "cases_passed": 12,
+  "includes_original_Size_bug_reproduction": true,
+  "syntax_checked_changed_runtime_sources": 4,
+  "readback_tolerance_relaxed": false,
+  "rbxl_property_differences": "Four ModuleScript Source strings only",
+  "roblox_studio_executed": false,
+  "luau_engine_compiled": false,
+  "six_links_validated": false
+}
