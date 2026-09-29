@@ -75,8 +75,19 @@ local before=source(target)
 local beforeDisabled=target.Disabled
 local beforeContext=target.RunContext.Name
 local backupName="WorldV3_3_1_0_"..HttpService:GenerateGUID(false)
-local record=CHS:TryBeginRecording("ValbrumeWorldV31Install","Installer Valbrume World V3.1")
-assert(record,"Historique Studio occupe. Termine l'autre operation puis relance.")
+local function beginRecordingWithRetry()
+    local attempts=8
+    for attempt=1,attempts do
+        local record=CHS:TryBeginRecording("ValbrumeWorldV31Install","Installer Valbrume World V3.1")
+        if record then return record end
+        if attempt<attempts then
+            warn(string.format("[VALBRUME V3.1 INSTALL] Historique Studio occupe — nouvelle tentative %d/%d dans 0.75 s.",attempt+1,attempts))
+            task.wait(0.75)
+        end
+    end
+    error("Historique Studio toujours occupe apres plusieurs tentatives. Ferme les outils/plugins qui modifient la scene, attends quelques secondes puis relance l'installateur complet.")
+end
+local record=beginRecordingWithRetry()
 local created,backup,createdBackups
 local ok,err=xpcall(function()
     if not backups then
