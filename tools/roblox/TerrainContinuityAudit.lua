@@ -1,5 +1,5 @@
 --[[
-Valbrume Terrain Continuity Audit v1.0
+Valbrume Terrain Continuity Audit v1.1
 READ-ONLY / NON-DESTRUCTIVE.
 
 Purpose:
@@ -19,15 +19,22 @@ Recommended:
 2) Start Play.
 3) Wait until the world is visibly loaded.
 4) View > Output and View > Command Bar.
-5) Paste this entire script into the Command Bar while Play is running.
-6) Copy everything between VALBRUME_TERRAIN_AUDIT_BEGIN/END and send it back.
+5) IMPORTANT: switch the Command Bar execution context to SERVER, not Client.
+6) Paste this entire script into the Server Command Bar while Play is running.
+7) Copy everything between VALBRUME_TERRAIN_AUDIT_BEGIN/END and send it back.
 ]]
 
 local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
 local Terrain = workspace.Terrain
 
+assert(
+	RunService:IsServer(),
+	"Cet audit doit être exécuté côté SERVEUR. Dans Studio Play, bascule la Command Bar sur Server puis relance le script."
+)
+
 local CONFIG = {
-	VERSION = "1.0.0",
+	VERSION = "1.1.0",
 	SAMPLE_STEP = 12,
 	RAY_START_Y = 420,
 	RAY_LENGTH = 900,
