@@ -57,7 +57,9 @@ function R.prepare(world)
         end
     end
     RunService.PostSimulation:Wait()
-    root:SetAttribute("CandidateVersion",Atlas.Version)
+    -- Six-link native repair runs after legacy terrain writes, before Biome/Ready.
+    require(script.Parent.ContinentLinkRepair).apply(world)
+    root:SetAttribute("CandidateVersion","continents-candidate-0.2")
     root:SetAttribute("RimColumnsPatched",written)
     print("[VALBRUME CONTINENTS] "..HttpService:JSONEncode({version=Atlas.Version,checked=checked,patched=written,seconds=os.clock()-started}))
 end
@@ -68,11 +70,11 @@ function R.audit(world)
     assert(RunService:IsStudio() and RunService:IsServer() and RunService:IsRunning(),"Audit: Studio Play / Server")
     assert(valid(world) and world:GetAttribute("GenerationReady")==true,"World not Ready")
     local root=workspace:FindFirstChild("ValbrumeContinents")
-    local summary={version=Atlas.Version,regions=0,parts=0,foreignSources=0,unanchored=0,samples=0,flagged=0}
+    local summary={version="continents-candidate-0.2",regions=0,parts=0,foreignSources=0,unanchored=0,samples=0,flagged=0,terrainMissing=0,unsupported=0}
     print("=== VALBRUME_CONTINENTS_AUDIT_BEGIN ===")
     local ok,err=xpcall(function()
         assert(root and root:FindFirstChild("ImportedRegions"),"ImportedRegions missing")
-        emit("META",{version=Atlas.Version,generationId=world:GetAttribute("GenerationId"),context="Server",note="Prospecting samples; not a walkability, asset-loading or performance certificate"})
+        emit("META",{version=summary.version,atlasVersion=Atlas.Version,generationId=world:GetAttribute("GenerationId"),context="Server",note="Prospecting samples; not a walkability, asset-loading or performance certificate"})
         for id,info in pairs(Atlas.Imported) do
             local model=root.ImportedRegions:FindFirstChild(id)
             assert(model,"Missing region "..id)
@@ -98,7 +100,7 @@ function R.audit(world)
         support.IgnoreWater=true
         local started=os.clock()
         for _,route in ipairs(Atlas.Probes) do
-            local stats={id=route.Id,samples=0,flagged=0,terrainMissing=0,water=0,lava=0,steep=0,abruptGrade=0,elevatedSupport=0,obstructed=0,records=0,omitted=0}
+            local stats={id=route.Id,samples=0,flagged=0,terrainMissing=0,unsupported=0,water=0,lava=0,steep=0,abruptGrade=0,elevatedSupport=0,obstructed=0,records=0,omitted=0}
             local previous
             for i=1,#route.Points-1 do
                 local a,b=route.Points[i],route.Points[i+1]
@@ -114,6 +116,7 @@ function R.audit(world)
                     local flags={}
                     local function flag(k) flags[#flags+1]=k; stats[k]=stats[k]+1 end
                     if not th then flag("terrainMissing") end
+                    if not sh then flag("unsupported") end
                     if th then
                         if th.Material==Enum.Material.Water then flag("water") end
                         if th.Material==Enum.Material.CrackedLava then flag("lava") end
@@ -143,8 +146,12 @@ function R.audit(world)
             end
             summary.samples=summary.samples+stats.samples
             summary.flagged=summary.flagged+stats.flagged
+            summary.terrainMissing=summary.terrainMissing+stats.terrainMissing
+            summary.unsupported=summary.unsupported+stats.unsupported
             emit("PROSPECTING_LINE",stats)
         end
+        summary.sixLinks=require(script.Parent.ContinentLinkAudit).run(world)
+        summary.patchVersion=summary.sixLinks.version
         -- The unambiguous central water band excludes the intentional far-coast details.
         local waterOK,waterTotal=0,0
         for z=-2400,2800,80 do
@@ -154,7 +161,7 @@ function R.audit(world)
         end
         summary.centralSeaSamples=waterTotal
         summary.centralSeaWater=waterOK
-        summary.status=(summary.flagged==0 and summary.foreignSources==0 and summary.unanchored==0 and waterOK==waterTotal) and "SAMPLED_OK" or "REVIEW_REQUIRED"
+        summary.status=(summary.flagged==0 and summary.sixLinks.status=="SUPPORT_SAMPLED_OK" and summary.foreignSources==0 and summary.unanchored==0 and waterOK==waterTotal) and "SAMPLED_OK" or "REVIEW_REQUIRED"
         summary.manualTraversalPending=true
         summary.mobileProfilePending=true
     end,debug.traceback)

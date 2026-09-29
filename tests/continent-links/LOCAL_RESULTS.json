@@ -1,0 +1,10 @@
+{
+  "date": "2026-09-29",
+  "engine": "Lua 5.4 shared syntax and API mocks; NOT Roblox",
+  "assertions": 179824,
+  "planned_tiles": 337,
+  "planned_columns": 44326,
+  "source_syntax_files": 6,
+  "checks": ["V3 and central-sea exclusions", "original probe coordinates unchanged", "native caves and water preserved", "empty-column infill", "tile readback", "restoration after injected write failure", "runtime reexecution no-op", "original RBXL properties preserved except allowlisted Source"],
+  "roblox_test_passed": false
+}
