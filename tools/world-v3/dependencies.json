@@ -1,0 +1,311 @@
+[
+  {
+    "Path": [
+      "ReplicatedStorage",
+      "Valbrume",
+      "Config"
+    ],
+    "Class": "ModuleScript",
+    "Hashes": [
+      "9437d8ed7fa0f8b7c5656c0632c81dcb7f54d595"
+    ]
+  },
+  {
+    "Path": [
+      "ReplicatedStorage",
+      "Valbrume",
+      "StoryConfigV23"
+    ],
+    "Class": "ModuleScript",
+    "Hashes": [
+      "8c01e6053b69910bc098fc561c12ac9f87f17879"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "A2MicroArtPassC1"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "8d9ccc5f81e5e198264f473ff0c46a7859144df6"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "CharacterStabilityService"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "22eecd5c634c282bb532b4a68a62c77321b724ab"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "DungeonPartyService"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "d66f6ce14a05a7d97a21f820b40934d65ff5426b"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "ExpansionStoryServiceV26"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "07216e6f38132f7cb2e90a69109c38ba602e6136"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "ExpansionWorldContentV26"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "fdfe390ff6b8b671eb27972ff5afccd823116445"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "JournalSyncServiceV27"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "7f8af8eca079b2c88a931550fec0b1f125da7d72"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "Main"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "08568724fd0f4e2e441dfb3bcdab43f966aec615"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "OpenWorldBiomeV28"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "7bf34fc86214d32accf37b8ceca3dbd8048638f3"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "OpenWorldContinentsV28"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "d1c0f6345f65de9ba0b711106b142fdf34626cd9",
+      "d810746c844717a72146451a2bb149388dc50aa5"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "PlayerDataService"
+    ],
+    "Class": "ModuleScript",
+    "Hashes": [
+      "3d6278076780a3398c1bcacc84f9d399f4bc5189"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "SafeSpawnDirectorV26"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "ad15fc3757c13dbf212f483a63bffa8bd2da55ec"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "StoryQuestServiceV23"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "f43cfc42967180733a49f8b2be04a0eff0addc1e"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "ValbrumeQARuntime"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "050fc49eaabe997b1b3671d2b9a829dcc715e4dd"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "ValbrumeQAV26"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "fa70f4fd9a1cb1a409faa1870b393ed64e2e0409"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "ValbrumeQAV27"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "c2793631cf7888254c00657ede0cf046befe1a4f"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "ValbrumeQAV28"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "dd968ae9e0364e427426789f85b3041431810e98"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "WeaponToolServiceV27"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "67e1910f3d058d959bff5a3292ae86c86ecdd22b"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "WorldBuilder"
+    ],
+    "Class": "ModuleScript",
+    "Hashes": [
+      "7dabd6dbb53b33a94dafe2837932a4a61e2e3d7b"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "WorldGeneration"
+    ],
+    "Class": "ModuleScript",
+    "Hashes": [
+      "939989bf9d63ea3ece408f910aa8ed566a1f286c"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "WorldPolishV23"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "26a1e829d8a72a51e3cc786a22c28d2049f6ad17"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "ZoneExpansionService"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "f5d6f62bcd65ab10b69f1a32cd26057a502464f5"
+    ]
+  },
+  {
+    "Path": [
+      "ServerScriptService",
+      "ValbrumeServer",
+      "ZoneGroundingService"
+    ],
+    "Class": "Script",
+    "Hashes": [
+      "09d5edeb30d85c44bbe4816d61db4a363f7a5eb1"
+    ]
+  },
+  {
+    "Path": [
+      "StarterPlayer",
+      "StarterPlayerScripts",
+      "OpenWorldAtmosphereClientV28"
+    ],
+    "Class": "LocalScript",
+    "Hashes": [
+      "da66533222722c797702a361dfcc9f4b7ed1cd74"
+    ]
+  },
+  {
+    "Path": [
+      "StarterPlayer",
+      "StarterPlayerScripts",
+      "ValbrumeClient"
+    ],
+    "Class": "LocalScript",
+    "Hashes": [
+      "13809991bd86922b86c25e340c9e6bdc19b7c905"
+    ]
+  },
+  {
+    "Path": [
+      "StarterPlayer",
+      "StarterPlayerScripts",
+      "ValbrumeInterfaceV27"
+    ],
+    "Class": "LocalScript",
+    "Hashes": [
+      "b360384dadad88ad3c3cd667e4fd54dae0b10cdd"
+    ]
+  },
+  {
+    "Path": [
+      "StarterPlayer",
+      "StarterPlayerScripts",
+      "ValbrumePartyClient"
+    ],
+    "Class": "LocalScript",
+    "Hashes": [
+      "df79ea327b3dd2e8f53f3144aae62bd1247b8ce5"
+    ]
+  }
+]
