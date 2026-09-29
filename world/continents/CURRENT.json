@@ -1,54 +1,53 @@
 {
-  "version": "continents-candidate-0.2.1",
-  "patch": "six-links-0.2.1",
-  "status": "ROLLBACK_FIX_AND_DIAGNOSTICS_STUDIO_PENDING",
-  "git_base": "873724b79bf248125f494a5d9da4e9de3709e0cb",
-  "candidate": "VALBRUME_CONTINENTS_CANDIDATE_0_2_1.rbxl",
-  "candidate_sha256": "aeb9e15bbec2c38352acce2abb684018490f99a222bbecadd65924450aff1ec4",
-  "scope": ["S3_P6", "N4_P9", "S3_N4_BORDER", "O5_P8", "V6_P7", "O5_V6_BORDER"],
-  "evidence_before": {
-    "run": "3ff401fc-8247-4176-afcd-aad8b247f884",
+  "version": "continents-candidate-0.2.4",
+  "patch": "six-links-0.2.4",
+  "status": "READY_BUT_SUPPORT_FAILED_ONE_TILE_TEST_PENDING",
+  "repository_code_read_at": "91ec677d301c9551029b09f8082a5f07677006e4",
+  "candidate": "VALBRUME_CONTINENTS_CANDIDATE_0_2_4.rbxl",
+  "candidate_sha256": "e78ff49696195008d6af145d80b6bd60f158439db493313ce41b78d5fd391372",
+  "latest_engine_result": {
+    "run": "95da8983-a746-46e6-a90e-993f49d27571",
     "generation_ready": true,
     "imported_parts": 30730,
     "foreign_sources": 0,
-    "terrainMissing_by_line": {"S3_P6": 59, "N4_P9": 80, "O5_P8": 90, "V6_P7": 143, "S3_N4_BORDER": 33, "O5_V6_BORDER": 33},
+    "unanchored_parts": 0,
+    "samples": 1959,
+    "terrainMissing": 131,
+    "unsupported": 129,
+    "nonempty_read_regions_at_ray_misses": 131,
+    "empty_read_regions_at_ray_misses": 0,
+    "exact_ray_column_was_not_isolated": true,
+    "terrainMissing_by_link": {"S3_P6":46,"N4_P9":0,"O5_P8":79,"V6_P7":6,"S3_N4_BORDER":0,"O5_V6_BORDER":0},
+    "water_samples": 80,
+    "steep_samples": 117,
+    "abrupt_grade_samples": 113,
     "central_water_hits": 29,
-    "central_water_samples": 66
+    "central_water_samples": 66,
+    "cause_proven": false
   },
-  "latest_engine_result": {
-    "candidate": "0.2",
-    "run": "b6b2bd0b-abc1-44b1-b5af-539051850a93",
-    "generation_ready": false,
-    "primary_error": "Voxel readback mismatch",
-    "rollback_error": "Unknown channel id 'Size'",
-    "tile_restored": false,
-    "primary_cause_established": false
+  "latest_tool": {
+    "path": "tools/terrain-canary/TEST_TERRAIN_S3.lua",
+    "version": "terrain-canary-1.0",
+    "scope": "single 28x640x28 stud region, S3_P6, Studio Play/Server after Ready",
+    "read_only": false,
+    "modifies_saved_scripts": false,
+    "modifies_rbxl_offline": false,
+    "local_pure_policy_cases": 13,
+    "engine_test_received": false
   },
   "gates": {
-    "candidate_0_1_opens_in_Studio": true,
-    "candidate_0_1_generation_ready": true,
-    "candidate_0_2_Roblox_test_passed": false,
-    "candidate_0_2_1_Roblox_test_passed": false,
+    "candidate_0_2_4_generation_ready": true,
     "six_links_support_passed": false,
     "manual_traversal_passed": false,
-    "mobile_performance_passed": false
+    "mobile_performance_passed": false,
+    "central_sea_passed": false,
+    "ready_to_publish": false
   },
-  "unchanged_relative_to_0_2": {
-    "instances": 36912,
-    "sources_unchanged": 36,
-    "sources_changed": 4,
-    "raw_chunks_unchanged": 2261,
-    "stored_SmoothGrid": true,
-    "stored_PhysicsGrid": true,
-    "all_WorldV3_sources": true,
-    "maps_transforms_and_assets": true,
-    "gameplay_economy_and_saving": true
+  "artifact_source_consistency": {
+    "ContinentLinkRepair_embedded_blob": "3a02d7f9f93b78a61a43c81b1d499acbeb652fb9",
+    "ContinentLinkRepair_repository_blob": "846a61ddfc66dc21fa0dc7e5c81806d1fce96427",
+    "byte_identical": false,
+    "note": "The standalone canary does not use or overwrite this module. Reconcile before the next bundled candidate."
   },
-  "notes": [
-    "Size metadata is filtered on every write including rollback",
-    "First readback mismatch cause remains unknown; exact cell diagnostics added",
-    "Material equality and occupancy tolerance are not relaxed",
-    "No native-map binary published in Git",
-    "Central-sea warning intentionally remains outside this repair scope"
-  ]
+  "next_user_action": "Run TEST_TERRAIN_S3.txt in existing candidate 0.2.4, Play/Server after Ready; collect CANARY_BEGIN/END; Stop Play."
 }
