@@ -1,4 +1,4 @@
--- Candidate 0.2.3 diagnostic: fill confirmed missing support, then report residual points without aborting Ready.
+-- Candidate 0.2.4 diagnostic: wait for Terrain physics, then compare residual ray misses with read-only voxel occupancy.
 -- No ReadVoxelChannels/WriteVoxelChannels writes: native terrain that already raycasts is untouched.
 local RunService=game:GetService("RunService")
 local HttpService=game:GetService("HttpService")
@@ -29,7 +29,7 @@ function R.apply(world)
     tp.FilterType=Enum.RaycastFilterType.Include
     tp.FilterDescendantsInstances={terrain}
     tp.IgnoreWater=false
-    local report={version=P.Version,samples=0,existing=0,filled=0,postMissing=0,writes=0,seconds=0,postMissingByLink={}}
+    local report={version=P.Version,samples=0,existing=0,filled=0,postMissing=0,writes=0,seconds=0,postMissingByLink={},postMissingVoxelOccupied=0,postMissingVoxelEmpty=0}
     active=true
     root:SetAttribute("LinkRepairStatus","BUILDING")
     local ok,err=xpcall(function()
@@ -68,7 +68,7 @@ function R.apply(world)
                 end
             end
         end
-        for _=1,3 do RunService.PostSimulation:Wait();guard() end
+        for _=1,6 do RunService.PostSimulation:Wait();guard() end\n        task.wait(P.PhysicsSettleSeconds)\n        guard()
         local details=0
         for _,link in ipairs(P.Links) do
             local missing=0
@@ -86,11 +86,35 @@ function R.apply(world)
                         if not workspace:Raycast(Vector3.new(x,384,z),Vector3.new(0,-896,0),tp) then
                             report.postMissing=report.postMissing+1
                             missing=missing+1
+                            local vr=Region3.new(
+                                Vector3.new(x-2,P.MinY,z-2),
+                                Vector3.new(x+2,P.MaxY,z+2)
+                            ):ExpandToGrid(4)
+                            local materials,occupancy=terrain:ReadVoxels(vr,4)
+                            local voxelOccupied,voxelTop,voxelMaterial=false,nil,nil
+                            for ix=1,#occupancy do
+                                for iy=1,#occupancy[ix] do
+                                    for iz=1,#occupancy[ix][iy] do
+                                        local o=occupancy[ix][iy][iz]
+                                        if o and o>0 then
+                                            voxelOccupied=true
+                                            local candidate=P.MinY+(iy-1+o)*4
+                                            if not voxelTop or candidate>voxelTop then
+                                                voxelTop=candidate
+                                                voxelMaterial=tostring(materials[ix][iy][iz])
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                            if voxelOccupied then report.postMissingVoxelOccupied=report.postMissingVoxelOccupied+1
+                            else report.postMissingVoxelEmpty=report.postMissingVoxelEmpty+1 end
                             if details<P.MaxDetails then
                                 details=details+1
                                 print("[VALBRUME SIX LINKS MISSING] "..HttpService:JSONEncode({
                                     version=P.Version,link=link.Id,offset=offset,segment=i,sample=n,
-                                    x=x,z=z,plannedY=lerp(a[2],b[2],t),footprint=P.FillFootprint
+                                    x=x,z=z,plannedY=lerp(a[2],b[2],t),footprint=P.FillFootprint,
+                                    voxelOccupied=voxelOccupied,voxelTop=voxelTop,voxelMaterial=voxelMaterial
                                 }))
                             end
                         end
@@ -99,7 +123,7 @@ function R.apply(world)
             end
             report.postMissingByLink[link.Id]=missing
         end
-        report.status=(report.postMissing==0) and "SUPPORT_FILLED" or "DIAGNOSTIC_INCOMPLETE"
+        report.status=(report.postMissing==0) and "SUPPORT_FILLED" or "DIAGNOSTIC_READBACK"
     end,debug.traceback)
     active=false
     report.seconds=os.clock()-started
@@ -109,7 +133,7 @@ function R.apply(world)
         error("Six-link repair interrupted. Stop Play; do not publish: "..tostring(err))
     end
     root:SetAttribute("LinkRepairVersion",P.Version)
-    root:SetAttribute("LinkRepairStatus",report.status=="SUPPORT_FILLED" and "APPLIED_AUDIT_PENDING" or "DIAGNOSTIC_INCOMPLETE")
+    root:SetAttribute("LinkRepairStatus",report.status=="SUPPORT_FILLED" and "APPLIED_AUDIT_PENDING" or "DIAGNOSTIC_READBACK")
     root:SetAttribute("LinkRepairColumnsFilled",report.filled)
     root:SetAttribute("LinkRepairSeconds",report.seconds)
     finishedWorld,finishedGeneration,lastReport=world,generation,report
