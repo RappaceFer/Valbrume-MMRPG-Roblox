@@ -2,6 +2,8 @@ local Players=game:GetService("Players"); local RS=game:GetService("ReplicatedSt
 local C=require(RS:WaitForChild("Valbrume"):WaitForChild("Config")); local Data=require(script.Parent:WaitForChild("PlayerDataService"))
 local Generation = require(script.Parent.WorldGeneration)
 local world = Generation.Await("Continents")
+local Atlas=require(RS.Valbrume.ContinentAtlas)
+local Continents=require(script.Parent.ContinentsRuntime)
 local expansion=world:WaitForChild("ExpansionV25"); local zones=expansion:WaitForChild("Zones"); local root=world:WaitForChild("OpenWorldV28"); local poi=root:WaitForChild("POI"); local hazards=root:WaitForChild("Hazards"); local sea=root:WaitForChild("SeaTravel")
 local function part(parent,name,size,cf,color,material,t) local p=Instance.new("Part"); p.Name=name; p.Size=size; p.CFrame=cf; p.Anchored=true; p.CanCollide=true; p.CanTouch=false; p.Color=color; p.Material=material or Enum.Material.Slate; p.Transparency=t or 0; p.Parent=parent; return p end
 local function label(a,title,sub,color) local g=Instance.new("BillboardGui"); g.Adornee=a; g.Size=UDim2.fromOffset(270,72); g.StudsOffsetWorldSpace=Vector3.new(0,7,0); g.AlwaysOnTop=true; g.MaxDistance=125; g.Parent=a; local x=Instance.new("TextLabel"); x.Size=UDim2.fromScale(1,1); x.BackgroundTransparency=1; x.Text=title.."\n"..sub; x.TextColor3=color; x.TextStrokeTransparency=.25; x.Font=Enum.Font.GothamBold; x.TextSize=15; x.TextWrapped=true; x.Parent=g end
@@ -16,9 +18,16 @@ local ship=Instance.new("Model"); ship.Name="Ferry_Obsidienne"; ship.Parent=sea;
 local function prompt(from,to,title) local p=Instance.new("ProximityPrompt"); p.Name="CrossSea"; p.ActionText="Embarquer"; p.ObjectText="Vers "..title; p.HoldDuration=.7; p.MaxActivationDistance=14; p.RequiresLineOfSight=false; p.Parent=from.PrimaryPart; p.Triggered:Connect(function(player) player:SetAttribute("VBExpansionTravel",true); player:SetAttribute("VBExpansionZone",nil); safePivot(player,to.PrimaryPart.CFrame+to.PrimaryPart.CFrame.LookVector*22+Vector3.new(0,6,0)) end) end
 prompt(west,east,"Varkhûn"); prompt(east,west,"Elyndra")
 local centers={}; for _,id in ipairs({"A2","S3","N4","H2","O5","V6"}) do centers[id]=center(id) end; local ex={S3=true,N4=true,O5=true,V6=true}
-local function hd(a,b) return Vector2.new(a.X-b.X,a.Z-b.Z).Magnitude end; local function nearest(pos) local id,dist=nil,math.huge; for z,c in pairs(centers) do if c then local d=hd(pos,c); if d<dist then id,dist=z,d end end end; return id,dist end
-task.spawn(function() while true do task.wait(.35); for _,player in ipairs(Players:GetPlayers()) do local ch=player.Character; local rp=ch and ch:FindFirstChild("HumanoidRootPart"); local profile=Data.Get(player); if rp and not player:GetAttribute("VBDungeonId") and profile and profile.Zone and centers[profile.Zone] then local region,dist=nearest(rp.Position); local home=hd(rp.Position,centers[profile.Zone]); if region then player:SetAttribute("VBRegionId",region) end; if home>265 then player:SetAttribute("VBExpansionTravel",true) else player:SetAttribute("VBExpansionTravel",nil) end; if ex[region] and dist<=560 then player:SetAttribute("VBExpansionZone",region); player:SetAttribute("VBExpansionTravel",true) elseif region=="A2" or region=="H2" then player:SetAttribute("VBExpansionZone",nil); if region~=profile.Zone then player:SetAttribute("VBExpansionTravel",true) end end end end end end)
+local function hd(a,b) return Vector2.new(a.X-b.X,a.Z-b.Z).Magnitude end; local function nearest(pos) return Atlas.resolve(pos.X,pos.Z) end
+task.spawn(function() while true do task.wait(.35); for _,player in ipairs(Players:GetPlayers()) do local ch=player.Character; local rp=ch and ch:FindFirstChild("HumanoidRootPart"); local profile=Data.Get(player); if rp and not player:GetAttribute("VBDungeonId") and profile and profile.Zone and centers[profile.Zone] then local region,dist,continent=nearest(rp.Position); player:SetAttribute("VBContinentId",continent); local home=hd(rp.Position,centers[profile.Zone]); if region then player:SetAttribute("VBRegionId",region) end; if home>265 then player:SetAttribute("VBExpansionTravel",true) else player:SetAttribute("VBExpansionTravel",nil) end; if ex[region] and dist<=560 then player:SetAttribute("VBExpansionZone",region); player:SetAttribute("VBExpansionTravel",true) elseif region=="A2" or region=="H2" then player:SetAttribute("VBExpansionZone",nil); if region~=profile.Zone then player:SetAttribute("VBExpansionTravel",true) end else player:SetAttribute("VBExpansionZone",nil); player:SetAttribute("VBExpansionTravel",true) end end end end end)
 task.spawn(function() while true do task.wait(.75); for _,player in ipairs(Players:GetPlayers()) do local ch=player.Character; local h=ch and ch:FindFirstChildOfClass("Humanoid"); local rp=ch and ch:FindFirstChild("HumanoidRootPart"); if h and rp and h.Health>0 then for _,z in ipairs(lava) do local d=rp.Position-z.Position; if Vector2.new(d.X,d.Z).Magnitude<=z.Radius and math.abs(d.Y)<=20 then h:TakeDamage(math.max(8,h.MaxHealth*.08)); break end end end end end end)
 print("[Valbrume V2.8] Biomes : eau, lave, cristaux, ferry et détection open-world actifs.")
 
+Continents.prepare(world)
 Generation.Complete(world, "Biome")
+if game:GetService("RunService"):IsStudio() then
+    task.spawn(function()
+        local ok,err=pcall(function() Generation.Await("Ready"); Continents.audit(world) end)
+        if not ok then warn("[VALBRUME CONTINENTS QA] "..tostring(err)) end
+    end)
+end

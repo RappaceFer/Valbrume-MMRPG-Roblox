@@ -48,9 +48,12 @@ local function build()
     terrain:FillBlock(CFrame.new(0,-17,0),Vector3.new(900,50,2300),Enum.Material.Water)
     terrain:FillBlock(CFrame.new(-500,8,0),Vector3.new(160,20,2100),Enum.Material.Sand)
     terrain:FillBlock(CFrame.new(500,8,0),Vector3.new(160,20,2100),Enum.Material.Sand)
+    -- The continuous-world candidate reserves the central band for open water.
+    if not workspace:FindFirstChild("ValbrumeContinents") then
     for i, pos in ipairs({Vector3.new(-155,5,-430),Vector3.new(140,6,360),Vector3.new(-60,4,780)}) do
         terrain:FillBall(pos,68-i*7,Enum.Material.Rock)
         terrain:FillBall(pos+Vector3.new(0,15,0),44-i*4,Enum.Material.Grass)
+    end
     end
     local report = Builder.build(Layout,terrain,current)
     report.VegetationAdjusted = Dressing.build(world,root,Layout)

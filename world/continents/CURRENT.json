@@ -1,0 +1,26 @@
+{
+  "version": "continents-candidate-0.1",
+  "status": "OFFLINE_ASSEMBLY_STUDIO_PENDING",
+  "git_base": "73c2669d32891f6f5477987a46db3d688aa5dee8",
+  "dev_sha256": "34972d22124532166516022bfaf97dbbdc5b6e25784e84f78c2367c164fae4c9",
+  "candidate": "VALBRUME_CONTINENTS_CANDIDATE_0_1.rbxl",
+  "candidate_sha256": "ac798471ab560f6369f30720217557f8a72403a6bd5cbb9fdbd5962432a3000b",
+  "gates": {
+    "current_dev_received": true,
+    "v31_sources_present_in_dev": true,
+    "offline_assembly_written_and_reread": true,
+    "roblox_file_open_validated": false,
+    "roblox_collision_validated": false,
+    "all_region_traversals_validated": false,
+    "gameplay_regressions_passed": false,
+    "mobile_profile_passed": false,
+    "source_map_licenses_verified": false
+  },
+  "translations": {"P6": [-2560,0,-1664], "P9": [-2560,0,1664], "P8": [2560,0,-1664], "P7": [2944,0,2048]},
+  "source_sha256": {
+    "Place6.rbxl": "a97963be7751e6c8f17cc1e187ee9c5d5c7515ee011fef6fb59e7f16374de6d0",
+    "Place9.rbxl": "acb896a8728dcaedd9d92995dcd2b2ebf28c850b0e56bd38bb281aeb35b75646",
+    "Place8.rbxl": "d2fcfd955d98da0081c583421b7d72bc8ad551907233063438652cdd2b811394",
+    "Place7.rbxl": "c6be992a206ea27de8e97c2e3f6e6e0120f939713332157a2975b3ab3d5193f7"
+  }
+}
