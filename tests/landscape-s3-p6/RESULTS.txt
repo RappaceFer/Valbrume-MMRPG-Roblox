@@ -1,0 +1,16 @@
+PASS compiled files
+PASS endpoints preserved by spline
+PASS tile uniqueness and full source bounds exclusion
+PASS whole column footprint stays outside source and V3 routes
+PASS protected object boxes and smooth shoulder boundary
+PASS canonical rule, metadata, no input mutation
+PASS water and empty column protected
+PASS cavity preserved and thin roof cut rejected
+PASS unrelated cells unchanged and write arrays reject NaN
+PASS builder success
+PASS builder write-error
+PASS builder concurrent
+PASS builder deadline
+PASS builder world-change
+PASS builder support-regression
+RESULT cases=15 tiles=195 unprotected_columns=6686 path_studs=503.347

@@ -24,10 +24,13 @@ task.spawn(function() while true do task.wait(.75); for _,player in ipairs(Playe
 print("[Valbrume V2.8] Biomes : eau, lave, cristaux, ferry et détection open-world actifs.")
 
 Continents.prepare(world)
+-- Bounded S3-P6 landscape worksite; base six-link repair remains unchanged.
+local LandscapeS3P6=require(script.Parent.LandscapeS3P6.Build)
+LandscapeS3P6.run(world)
 Generation.Complete(world, "Biome")
 if game:GetService("RunService"):IsStudio() then
     task.spawn(function()
-        local ok,err=pcall(function() Generation.Await("Ready"); Continents.audit(world) end)
+        local ok,err=pcall(function() Generation.Await("Ready"); Continents.audit(world); LandscapeS3P6.audit(world) end)
         if not ok then warn("[VALBRUME CONTINENTS QA] "..tostring(err)) end
     end)
 end
