@@ -1,9 +1,9 @@
 {
   "version": "continents-candidate-0.2.5",
   "patch": "six-links-0.2.5",
-  "status": "SIX_LINK_SUPPORT_SAMPLED_OK_S3_P6_PREVIEW_CENTRELINE_OK_VISUAL_PENDING",
+  "status": "SIX_LINK_SUPPORT_SAMPLED_OK_VISUAL_REWORK_REQUIRED",
   "repository_code_read_at": "91ec677d301c9551029b09f8082a5f07677006e4",
-  "status_reviewed_at_commit": "82006f9d3f7442f31b8a5212f6b95b7181fa7eaf",
+  "status_reviewed_at_commit": "3488f23abba5966ba6c484977febdc9ebd264ddf",
   "candidate": "VALBRUME_CONTINENTS_CANDIDATE_0_2_5.rbxl",
   "candidate_sha256": "de4edf54d4e01bd0604046853e02839c347a92ab1f9c02b31bad3732613d91c2",
   "candidate_sha256_note": "Previously recorded artifact hash; not revalidated in this documentation-only step.",
@@ -79,6 +79,26 @@
     "integrated_into_candidate": false,
     "protection_note": "The script tests operation centres, not full brush footprints; protectedSkipped=0 is not a no-overlap proof."
   },
+  "latest_visual_review": {
+    "source": "Ten user screenshots received on 2026-09-30; grouping supplied by user",
+    "report": "docs/WORLD_VISUAL_REVIEW_2026_09_30.md",
+    "image_count": 10,
+    "user_side_mapping": {"H2":[1,2,3],"between_continents":[4],"A2":[5,6,7,8,9,10]},
+    "status": "WORLD_VISUAL_REWORK_REQUIRED",
+    "exact_s3_p6_preview_identified": false,
+    "runtime_generation_id_visible": false,
+    "individual_shapes_attributed_to_scripts": false,
+    "observations": [
+      "Rectangular platforms, straight boundaries and rounded isolated rock masses remain visible.",
+      "Central water separation has long parallel pale shore strips and an artificial canal-like silhouette.",
+      "Detailed village, castle, river, field and mountain compositions should be preserved.",
+      "The raised grey band across the village-and-fields view needs object-level identification before editing."
+    ],
+    "confirmed_code_fact": "OpenWorldContinentsV28 still writes two 160x20x2100 Sand bands at x=-500 and x=500; association with image 4 is plausible, not georeferenced proof.",
+    "scene_modified_in_this_review": false,
+    "runtime_sources_modified_in_this_review": false,
+    "world_visual_approved": false
+  },
   "gates": {
     "candidate_0_2_4_generation_ready": true,
     "candidate_0_2_5_generation_ready": true,
@@ -87,6 +107,8 @@
     "s3_p6_preview_centreline_sampled_passed": true,
     "s3_p6_visual_approval": false,
     "s3_p6_width_and_endpoints_passed": false,
+    "world_visual_review_received": true,
+    "world_visual_approval": false,
     "manual_traversal_passed": false,
     "mobile_performance_passed": false,
     "central_sea_passed": false,
@@ -101,7 +123,17 @@
     "byte_identical": false,
     "note": "Recorded after 0.2.4. The standalone canary does not use or overwrite this module. Do not infer source identity for later bundles from this historical record."
   },
-  "next_user_action": "Provide one oblique aerial screenshot of the S3-P6 preview in its Play session, showing both ends and shoulders. No new installer, no publication and no automatic promotion into DEV.",
+  "next_user_action": "Keep candidate 0.2.5 and backups. No new import, script execution or manual terrain edit is requested by this visual review. Do not publish.",
+  "next_work_item": {
+    "scope": "Bounded S3-P6 terrain revision before moving to O5-P8 and V6-P7",
+    "status": "PROPOSED_NOT_IMPLEMENTED",
+    "requirements": [
+      "Identify the actual local relief and decor at both endpoints before sculpting.",
+      "Blend the pass into existing terrain, protect complete brush footprints and preserve the imported P6 core.",
+      "Validate usable width, decor obstacles, avatar clearance and endpoint transitions, not only the centreline.",
+      "Retain the six-link support non-regression checks and keep global coastline reshaping a separate scoped task."
+    ]
+  },
   "latest_engine_result_0_2_4": {
     "run": "95da8983-a746-46e6-a90e-993f49d27571",
     "generation_ready": true,
@@ -143,6 +175,8 @@
     "N4_P9, S3_N4_BORDER and O5_V6_BORDER receive no native-query refresh in 0.2.5; their fill phase still runs.",
     "Zero missing samples is not proof of safe traversal, complete collision integrity or a continuous playable continent.",
     "Current step changes documentation only. Candidate 0.2.5, runtime sources and the preview script are not rewritten.",
-    "The ExplorerPlugin stack at 07:25:14 precedes the successful preview; its cause remains unknown."
+    "The ExplorerPlugin stack at 07:25:14 precedes the successful preview; its cause remains unknown.",
+    "Ten-view visual review received: image 4 is the sea, 1-3 H2 side, 5-10 A2 side. These are user side labels, not exact region IDs.",
+    "No visual approval is inferred from successful support or centreline tests. No larger rewrite is started by this review."
   ]
 }
