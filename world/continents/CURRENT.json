@@ -1,11 +1,108 @@
 {
   "version": "continents-candidate-0.2.5",
   "patch": "six-links-0.2.5",
-  "status": "TARGETED_QUERY_REFRESH_STUDIO_PENDING",
+  "status": "SIX_LINK_SUPPORT_SAMPLED_OK_S3_P6_PREVIEW_CENTRELINE_OK_VISUAL_PENDING",
   "repository_code_read_at": "91ec677d301c9551029b09f8082a5f07677006e4",
+  "status_reviewed_at_commit": "82006f9d3f7442f31b8a5212f6b95b7181fa7eaf",
   "candidate": "VALBRUME_CONTINENTS_CANDIDATE_0_2_5.rbxl",
   "candidate_sha256": "de4edf54d4e01bd0604046853e02839c347a92ab1f9c02b31bad3732613d91c2",
+  "candidate_sha256_note": "Previously recorded artifact hash; not revalidated in this documentation-only step.",
   "latest_engine_result": {
+    "source": "Texte collé(20260929-201820).txt, user Studio Server log",
+    "candidate": "0.2.5",
+    "run": "e8e715e0-b390-4899-99d0-901993fee4b6",
+    "generation_ready": true,
+    "imported_parts": 30730,
+    "foreign_sources": 0,
+    "unanchored_parts": 0,
+    "samples": 1959,
+    "routes": 6,
+    "terrainMissing": 0,
+    "unsupported": 0,
+    "support_status": "SUPPORT_SAMPLED_OK",
+    "overall_status": "REVIEW_REQUIRED",
+    "terrainMissing_by_link": {"S3_P6":0,"N4_P9":0,"O5_P8":0,"V6_P7":0,"S3_N4_BORDER":0,"O5_V6_BORDER":0},
+    "water_samples": 80,
+    "steep_samples": 157,
+    "abrupt_grade_samples": 144,
+    "central_water_hits": 29,
+    "central_water_samples": 66,
+    "refresh_tiles": 43,
+    "refresh_writes": 86,
+    "exact_solid_misses_before_refresh": 131,
+    "exact_empty_misses_before_refresh": 0,
+    "filled_calls": 732,
+    "repair_seconds": 7.696003799996106,
+    "normalized_full_solid_liquid_cells": 0,
+    "manual_traversal_validated": false,
+    "cause_proven": false
+  },
+  "latest_pre_preview_summary": {
+    "source": "User pasted log, 2026-09-30 07:25:15, Server",
+    "candidate": "0.2.5",
+    "samples": 1959,
+    "routes": 6,
+    "terrainMissing": 0,
+    "unsupported": 0,
+    "steep": 157,
+    "abruptGrade": 144,
+    "water": 80,
+    "overall_status": "REVIEW_REQUIRED",
+    "note": "This audit precedes the preview at 07:25:18; it does not certify post-preview geometry."
+  },
+  "latest_tool": {
+    "path": "tools/world-passes/VALBRUME_S3_P6_COL_PREVIEW.lua",
+    "scope": "Partial S3-P6 pass, Studio Play/Server after Ready, candidate 0.2.5",
+    "read_only": false,
+    "modifies_saved_scripts": false,
+    "modifies_rbxl_offline": false,
+    "engine_test_received": true,
+    "result_scope": "Terrain centreline only; not the full route, width, endpoints or avatar traversal",
+    "report": "docs/S3_P6_PREVIEW_RESULT_2026_09_30.md"
+  },
+  "latest_preview_result": {
+    "source": "User pasted output, 2026-09-30 07:25:18.262, Server",
+    "path": [[-1700,29,-760],[-1790,30,-860],[-1880,32,-965],[-1970,35,-1070],[-2028,36,-1140]],
+    "samples": 66,
+    "missing": 0,
+    "water": 0,
+    "steep": 0,
+    "abrupt": 0,
+    "terrainWrites": 975,
+    "protectedSkipped": 0,
+    "slope_threshold_degrees": 30,
+    "grade_threshold_degrees": 25,
+    "scan_includes_decor": false,
+    "side_bands_scanned": false,
+    "full_route_scanned": false,
+    "visual_approval_received": false,
+    "integrated_into_candidate": false,
+    "protection_note": "The script tests operation centres, not full brush footprints; protectedSkipped=0 is not a no-overlap proof."
+  },
+  "gates": {
+    "candidate_0_2_4_generation_ready": true,
+    "candidate_0_2_5_generation_ready": true,
+    "six_links_support_passed": true,
+    "six_links_support_scope": "1959 sampled points in received 0.2.5 runs, before preview; not entire continental surfaces",
+    "s3_p6_preview_centreline_sampled_passed": true,
+    "s3_p6_visual_approval": false,
+    "s3_p6_width_and_endpoints_passed": false,
+    "manual_traversal_passed": false,
+    "mobile_performance_passed": false,
+    "central_sea_passed": false,
+    "ready_to_publish": false,
+    "candidate_0_2_5_Roblox_test_passed": false,
+    "candidate_0_2_5_Roblox_test_note": "Full-world acceptance remains false; generation and sampled support passed separately."
+  },
+  "artifact_source_consistency": {
+    "candidate": "0.2.4 (historical finding, not a 0.2.5 verification)",
+    "ContinentLinkRepair_embedded_blob": "3a02d7f9f93b78a61a43c81b1d499acbeb652fb9",
+    "ContinentLinkRepair_repository_blob": "846a61ddfc66dc21fa0dc7e5c81806d1fce96427",
+    "byte_identical": false,
+    "note": "Recorded after 0.2.4. The standalone canary does not use or overwrite this module. Do not infer source identity for later bundles from this historical record."
+  },
+  "next_user_action": "Provide one oblique aerial screenshot of the S3-P6 preview in its Play session, showing both ends and shoulders. No new installer, no publication and no automatic promotion into DEV.",
+  "latest_engine_result_0_2_4": {
     "run": "95da8983-a746-46e6-a90e-993f49d27571",
     "generation_ready": true,
     "imported_parts": 30730,
@@ -17,14 +114,8 @@
     "nonempty_read_regions_at_ray_misses": 131,
     "empty_read_regions_at_ray_misses": 0,
     "exact_ray_column_was_not_isolated": true,
-    "terrainMissing_by_link": {
-      "S3_P6": 46,
-      "N4_P9": 0,
-      "O5_P8": 79,
-      "V6_P7": 6,
-      "S3_N4_BORDER": 0,
-      "O5_V6_BORDER": 0
-    },
+    "remaining_links": {"S3_P6":[46,46],"O5_P8":[79,79],"V6_P7":[6,4]},
+    "zero_support_links": ["N4_P9","S3_N4_BORDER","O5_V6_BORDER"],
     "water_samples": 80,
     "steep_samples": 117,
     "abrupt_grade_samples": 113,
@@ -32,68 +123,26 @@
     "central_water_samples": 66,
     "cause_proven": false
   },
-  "latest_tool": {
+  "canary_result": {
     "path": "tools/terrain-canary/TEST_TERRAIN_S3.lua",
     "version": "terrain-canary-1.0",
+    "engine_test_received": true,
+    "run": "c5b08c38-7855-482b-8af4-fc82e6b43787",
+    "point": {"x":-1962.0330907564603,"z":-1056.6750321948148},
     "scope": "single 28x640x28 stud region, S3_P6, Studio Play/Server after Ready",
-    "read_only": false,
-    "modifies_saved_scripts": false,
-    "modifies_rbxl_offline": false,
-    "local_pure_policy_cases": 13,
-    "engine_test_received": false
-  },
-  "gates": {
-    "candidate_0_2_4_generation_ready": true,
-    "six_links_support_passed": false,
-    "manual_traversal_passed": false,
-    "mobile_performance_passed": false,
-    "central_sea_passed": false,
-    "ready_to_publish": false,
-    "candidate_0_2_5_Roblox_test_passed": false
-  },
-  "artifact_source_consistency": {
-    "ContinentLinkRepair_embedded_blob": "3a02d7f9f93b78a61a43c81b1d499acbeb652fb9",
-    "ContinentLinkRepair_repository_blob": "846a61ddfc66dc21fa0dc7e5c81806d1fce96427",
-    "byte_identical": false,
-    "note": "The standalone canary does not use or overwrite this module. Reconcile before the next bundled candidate."
-  },
-  "next_user_action": "Run TEST_TERRAIN_S3.txt in existing candidate 0.2.4, Play/Server after Ready; collect CANARY_BEGIN/END; Stop Play.",
-  "latest_engine_result_0_2_4": {
-    "generation_ready": true,
-    "terrainMissing": 131,
-    "unsupported": 129,
-    "remaining_links": {
-      "S3_P6": [
-        46,
-        46
-      ],
-      "O5_P8": [
-        79,
-        79
-      ],
-      "V6_P7": [
-        6,
-        4
-      ]
-    },
-    "zero_support_links": [
-      "N4_P9",
-      "S3_N4_BORDER",
-      "O5_V6_BORDER"
-    ]
-  },
-  "canary_result": {
-    "point": {
-      "x": -1962.0330907564603,
-      "z": -1056.6750321948148
-    },
     "status": "ONE_TILE_RAY_RECOVERED",
     "before_queryable": false,
     "exact_column_solid_cells": 41,
-    "after_y": 34.806396484375
+    "after_y": 34.806396484375,
+    "canonical_readback": true,
+    "local_pure_policy_cases": 13,
+    "walkability_validated": false
   },
   "notes": [
-    "0.2.5 preserves the six-link support fills and round-trips only residual 32-stud tiles on S3_P6, O5_P8 and V6_P7",
-    "N4_P9, S3_N4_BORDER and O5_V6_BORDER receive no native-query refresh"
+    "0.2.5 preserves the six-link support fills and round-trips residual 32-stud tiles on S3_P6, O5_P8 and V6_P7.",
+    "N4_P9, S3_N4_BORDER and O5_V6_BORDER receive no native-query refresh in 0.2.5; their fill phase still runs.",
+    "Zero missing samples is not proof of safe traversal, complete collision integrity or a continuous playable continent.",
+    "Current step changes documentation only. Candidate 0.2.5, runtime sources and the preview script are not rewritten.",
+    "The ExplorerPlugin stack at 07:25:14 precedes the successful preview; its cause remains unknown."
   ]
 }
