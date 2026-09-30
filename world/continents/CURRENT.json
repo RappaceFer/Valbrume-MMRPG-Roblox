@@ -1,9 +1,11 @@
 {
   "version": "s3-p6-landscape-0.3.0",
-  "status": "LOCAL_LANDSCAPE_CODE_PREPARED_STUDIO_PENDING",
+  "status": "STUDIO_FAILED_CANONICAL_RESTORE_REPORTED_CODEX_HANDOFF_READY",
   "branch": "world/s3-p6-landscape",
   "base_commit": "23b4d9fcc40679ad7156db393f3c56c891fd7ecd",
+  "failed_code_commit": "7c9cee6aee23cfb64d797d6a5c579b591df00184",
   "candidate": "VALBRUME_CHANTIER_S3_P6_0_3_0.rbxl",
+  "candidate_role": "FAILED_EXPERIMENT_DIAGNOSTIC_ONLY_NOT_WORKING_BASE",
   "candidate_sha256": "399ebac40cb65355e0098175b21fc1d7278fd8b8bedb021752aa96ea183c38a1",
   "base_candidate": "VALBRUME_CONTINENTS_CANDIDATE_0_2_5.rbxl",
   "base_candidate_sha256": "de4edf54d4e01bd0604046853e02839c347a92ab1f9c02b31bad3732613d91c2",
@@ -23,6 +25,7 @@
   },
   "scope": "503-stud S3-P6 approach; not full region or full link",
   "report": "docs/S3_P6_LANDSCAPE_0_3_0.md",
+  "failure_report": "docs/S3_P6_LANDSCAPE_0_3_0_FAILURE.md",
   "preserved": {
     "original_instances": 36912,
     "original_sources_unchanged": 39,
@@ -32,11 +35,33 @@
     "stored_terrain_bytes_unchanged": true,
     "six_link_repair_sources_unchanged": true,
     "assets_positions_rotations_unchanged": true,
-    "gameplay_and_saving_sources_unchanged": true
+    "gameplay_and_saving_sources_unchanged": true,
+    "note": "Original 0.3.0 delivery record; this handoff does not modify the runtime or native files."
+  },
+  "latest_engine_result": {
+    "source": "Texte collé(20260930-062529).txt",
+    "source_sha256": "45c9abb4659c583476b372274d843f63040013c8b4172e5f7d6c0794a61cfffb",
+    "run": "ca4b619b-ea88-4dfd-8def-2b131b0bb57c",
+    "observed_local_time": "2026-09-30 08:24:52",
+    "generation_ready": false,
+    "six_link_pre_sculpt_postMissing": 0,
+    "six_link_pre_sculpt_samples": 1959,
+    "status": "FAILED_RESTORED",
+    "canonicalWorksiteRestored_reported": true,
+    "independent_restore_verification": false,
+    "error": "Landscape readback mismatch -2016,-1184 SolidMaterial (8,42,4) Enum.Material.Grass / Enum.Material.Air",
+    "cause_proven": false,
+    "changedTiles": 7,
+    "writes": 16,
+    "planned_tiles": 120,
+    "planned_columns": 5918,
+    "protected_objects": 46,
+    "post_sculpt_audit_completed": false
   },
   "validation": {
     "local_lua54_cases_passed": 15,
-    "roblox_engine_test_received": false,
+    "roblox_engine_test_received": true,
+    "roblox_engine_test_passed": false,
     "new_candidate_six_links_support_passed": false,
     "new_candidate_visual_approval": false,
     "manual_traversal_passed": false,
@@ -44,8 +69,17 @@
     "central_sea_passed": false,
     "ready_to_publish": false
   },
+  "handoff": {
+    "prompt": "docs/PROMPT_CODEX_VALBRUME.md",
+    "local_bundle": "VALBRUME_PASSAGE_CODEX.zip",
+    "resume_from": "base_candidate",
+    "objectives": ["Recompose the existing two-continent world without replacing functional gameplay", "Create an original second world with a secure return portal"],
+    "second_place_created": false,
+    "publication_authorized": false,
+    "mcp_capabilities_verified_in_Codex": false
+  },
   "previous_visual_review": "docs/WORLD_VISUAL_REVIEW_2026_09_30.md",
   "previous_preview_result": "docs/S3_P6_PREVIEW_RESULT_2026_09_30.md",
-  "history_pointer": "Previous CURRENT.json is retained at base_commit; previous logs are not treated as results for 0.3.0.",
-  "next_user_action": "Open new worksite rbxl separately, Play, send Server Output through S3_P6_LANDSCAPE_AUDIT_END. No installer or old preview. Do not publish."
+  "history_pointer": "Previous CURRENT.json is retained at failed_code_commit; earlier passing logs do not certify 0.3.0.",
+  "next_user_action": "Stop the failed Play. Make the handoff folder available next to the Git clone in VS Code and ask Codex to read the prompt and verify M0. No new candidate or installer."
 }
